@@ -3,73 +3,201 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <title>📚 Bookshop</title>
     <link rel="stylesheet" href="style/style.css" />
-    <script
-      src="https://kit.fontawesome.com/3ff1669054.js"
-      crossorigin="anonymous"
-    ></script>
-    <title>Product Page</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
   </head>
   <body>
-    <div class="body-wrapper">
+    <div id="app" class="body-wrapper">
       <nav>
-        <a href="#" class="navbar-brand">Bookshop logo</a>
-        <div>
-          <ul class="navbar-items">
-            <li><a href="#">Category 1</a></li>
-            <li><a href="#">Category 2</a></li>
-          </ul>
-        </div>
+        <a href="#" class="navbar-brand">📚 Bookshop</a>
+
         <div class="searchbar-wrapper">
           <div class="searchbar">
-            <div class="search-icon">
-              <i class="fa-solid fa-magnifying-glass"></i>
-            </div>
-            <div class="search">
-              <input type="text" placeholder="Search book..." />
-            </div>
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search book..." />
           </div>
         </div>
+
         <div class="cart-button">
           <button><i class="fa-solid fa-cart-shopping"></i></button>
-          <button class="visibility-mode">
+          <button class="visibility-mode" @click="toggleDarkMode">
             <i class="fa-solid fa-moon"></i>
           </button>
         </div>
       </nav>
+
       <div class="main-content">
+        <!-- FILTER SECTION -->
         <div class="filter">
           <div class="filter-header">
-            <div class="filter-icon"><i class="fa-solid fa-filter"></i></div>
+            <div class="filter-icon">
+              <i class="fa-solid fa-filter"></i>
+            </div>
             <div class="filter-text"><span>Filter</span></div>
           </div>
-          <div class="filter-1"></div>
-          <div class="filter-2"></div>
-          <div class="filter-3"></div>
+
+          <div class="filter-categories">
+            <div><strong>Sort by:</strong></div>
+            <div class="sort-by-options">
+              <label><input type="checkbox" /> Subject</label>
+              <label><input type="checkbox" /> Location</label>
+              <label><input type="checkbox" /> Price</label>
+              <label><input type="checkbox" /> Availability</label>
+            </div>
+          </div>
+
+          <div class="sorting-order">
+            <div><strong>Order:</strong></div>
+            <div class="sort-by-options">
+              <label><input type="checkbox" /> Ascending</label>
+              <label><input type="checkbox" /> Descending</label>
+            </div>
+          </div>
+
+          <div class="filter-info">
+            <i class="fa-solid fa-circle-info"></i>
+            Select your preferences to filter the products. You can sort by
+            multiple criteria and choose the order of results.
+          </div>
+
+          <div class="pedagogy-quote">
+            <i class="fa-solid fa-quote-left quote-icon"></i>
+            <p class="quote-text">
+              "Education is the most powerful weapon which you can use to change
+              the world."
+            </p>
+            <p class="quote-author">— Nelson Mandela</p>
+          </div>
+
+          <div class="filter-actions">
+            <button class="apply-btn">Apply</button>
+            <button class="reset-btn">Reset</button>
+          </div>
         </div>
+
+        <!-- PRODUCT SECTION -->
         <div class="product">
           <div class="product-header">
-            <h2>Product List <span class="sum-items">(60)</span></h2>
-            <div>
-              <span class="sort-by">Sort by:</span>
-              <select name="price" id="price-select">
+            <h2>Product List <span class="sum-items">(6)</span></h2>
+            <div class="pagination">
+              <button disabled><i class="fa-solid fa-chevron-left"></i></button>
+              <button class="active">1</button>
+              <button>2</button>
+              <button>3</button>
+              <button><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+
+          <div class="lesson-cards">
+            <div class="lesson-details">
+              <div class="image-content">
+                <img src="images\maths.jpg" alt="maths" />
+              </div>
+              <div><strong>Subject:</strong> Maths</div>
+              <div><strong>Location:</strong> London</div>
+              <div><strong>Price:</strong> Rs 2700</div>
+              <div><strong>Spaces:</strong> 5</div>
+              <div class="cart-btn">
                 <button>
-                  <selectedcontent></selectedcontent>
+                  <i class="fa-solid fa-cart-plus"></i> Add to cart
                 </button>
-                <option value="low-to-high">
-                  <span class="icon" aria-hidden="true"></span
-                  ><span class="option-label">Low to High</span>
-                </option>
-                <option value="high-to-low">
-                  <span class="icon" aria-hidden="true"></span
-                  ><span class="option-label">High to Low</span>
-                </option>
-              </select>
+              </div>
+            </div>
+
+            <div class="lesson-details">
+              <div class="image-content">
+                <img src="images/science.jpeg" alt="science" />
+              </div>
+              <div><strong>Subject:</strong> Science</div>
+              <div><strong>Location:</strong> Paris</div>
+              <div><strong>Price:</strong> Rs 2500</div>
+              <div><strong>Spaces:</strong> 8</div>
+              <div class="cart-btn">
+                <button>
+                  <i class="fa-solid fa-cart-plus"></i> Add to cart
+                </button>
+              </div>
+            </div>
+
+            <div class="lesson-details">
+              <div class="image-content">
+                <img src="images/english.jpg" alt="english" />
+              </div>
+              <div><strong>Subject:</strong> English</div>
+              <div><strong>Location:</strong> Berlin</div>
+              <div><strong>Price:</strong> Rs 2000</div>
+              <div><strong>Spaces:</strong> 10</div>
+              <div class="cart-btn">
+                <button>
+                  <i class="fa-solid fa-cart-plus"></i> Add to cart
+                </button>
+              </div>
+            </div>
+
+            <div class="lesson-details">
+              <div class="image-content">
+                <img src="images/history.jpg" alt="history" />
+              </div>
+              <div><strong>Subject:</strong> History</div>
+              <div><strong>Location:</strong> Rome</div>
+              <div><strong>Price:</strong> Rs 3100</div>
+              <div><strong>Spaces:</strong> 7</div>
+              <div class="cart-btn">
+                <button>
+                  <i class="fa-solid fa-cart-plus"></i> Add to cart
+                </button>
+              </div>
+            </div>
+
+            <div class="lesson-details">
+              <div class="image-content">
+                <img src="images/geography.jpg" alt="geography" />
+              </div>
+              <div><strong>Subject:</strong> Geography</div>
+              <div><strong>Location:</strong> New York</div>
+              <div><strong>Price:</strong> Rs 2900</div>
+              <div><strong>Spaces:</strong> 4</div>
+              <div class="cart-btn">
+                <button>
+                  <i class="fa-solid fa-cart-plus"></i> Add to cart
+                </button>
+              </div>
+            </div>
+
+            <div class="lesson-details">
+              <div class="image-content">
+                <img src="images/programming.jpg" alt="programming" />
+              </div>
+              <div><strong>Subject:</strong> Programming</div>
+              <div><strong>Location:</strong> Tokyo</div>
+              <div><strong>Price:</strong> Rs 3500</div>
+              <div><strong>Spaces:</strong> 4</div>
+              <div class="cart-btn">
+                <button>
+                  <i class="fa-solid fa-cart-plus"></i> Add to cart
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {},
+        methods: {
+          toggleDarkMode: function () {
+            const body = document.querySelector("body");
+            body.classList.toggle("dark-mode");
+          },
+        },
+      });
+    </script>
   </body>
 </html>
