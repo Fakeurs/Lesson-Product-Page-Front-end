@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📚 Bookshop</title>
+    <title>MdxAcademy</title>
     <link rel="stylesheet" href="style/style.css" />
     <link
       rel="stylesheet"
@@ -13,173 +13,386 @@
   </head>
   <body>
     <div id="app" class="body-wrapper">
-      <nav>
-        <a href="#" class="navbar-brand">📚 Bookshop</a>
+      <div class="product-section" v-if="isProductPage">
+        <nav>
+          <a href="#" class="navbar-brand">MdxAcademy</a>
 
-        <div class="searchbar-wrapper">
-          <div class="searchbar">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search book..." />
+          <div class="searchbar-wrapper">
+            <div class="searchbar">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" placeholder="Search book..." />
+            </div>
+          </div>
+
+          <div class="cart-button">
+            <button @click="toggleCheckOutPage">
+              <i class="fa-solid fa-cart-shopping"></i>
+            </button>
+            <button title="Toggle admin mode">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+            <button class="visibility-mode" @click="toggleDarkMode">
+              <i v-if="isDarkMode" class="fa-regular fa-sun"></i>
+
+              <i v-else class="fa-solid fa-moon"></i>
+            </button>
+          </div>
+        </nav>
+
+        <div class="main-content">
+          <!-- FILTER SECTION -->
+          <div class="filter">
+            <div class="filter-header">
+              <div class="filter-icon">
+                <i class="fa-solid fa-filter"></i>
+              </div>
+              <div class="filter-text"><span>Filter</span></div>
+            </div>
+
+            <div class="filter-categories">
+              <div><strong>Sort by:</strong></div>
+              <div class="sort-by-options">
+                <label><input type="checkbox" /> Subject</label>
+                <label><input type="checkbox" /> Location</label>
+                <label><input type="checkbox" /> Price</label>
+                <label><input type="checkbox" /> Availability</label>
+              </div>
+            </div>
+
+            <div class="sorting-order">
+              <div><strong>Order:</strong></div>
+              <div class="sort-by-options">
+                <label><input type="checkbox" /> Ascending</label>
+                <label><input type="checkbox" /> Descending</label>
+              </div>
+            </div>
+
+            <div class="filter-info">
+              <i class="fa-solid fa-circle-info"></i>
+              Select your preferences to filter the products. You can sort by
+              multiple criteria and choose the order of results.
+            </div>
+
+            <div class="pedagogy-quote">
+              <i class="fa-solid fa-quote-left quote-icon"></i>
+              <p class="quote-text">
+                "Education is the most powerful weapon which you can use to
+                change the world."
+              </p>
+              <p class="quote-author">— Nelson Mandela</p>
+            </div>
+
+            <div class="filter-actions">
+              <button class="apply-btn">Apply</button>
+              <button class="reset-btn">Reset</button>
+            </div>
+          </div>
+
+          <!-- PRODUCT SECTION -->
+          <div class="product">
+            <div class="product-header">
+              <h2>Product List <span class="sum-items">(6)</span></h2>
+              <div class="pagination">
+                <button disabled>
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button><i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+            </div>
+
+            <div class="lesson-cards">
+              <div class="lesson-details">
+                <div class="image-content">
+                  <img src="images\maths.jpg" alt="maths" />
+                </div>
+                <div><strong>Subject:</strong> Maths</div>
+                <div><strong>Location:</strong> London</div>
+                <div><strong>Price:</strong> Rs 2700</div>
+                <div><strong>Spaces:</strong> 5</div>
+                <div class="cart-btn">
+                  <button>
+                    <i class="fa-solid fa-cart-plus"></i> Add to cart
+                  </button>
+                </div>
+              </div>
+
+              <div class="lesson-details">
+                <div class="image-content">
+                  <img src="images/science.jpeg" alt="science" />
+                </div>
+                <div><strong>Subject:</strong> Science</div>
+                <div><strong>Location:</strong> Paris</div>
+                <div><strong>Price:</strong> Rs 2500</div>
+                <div><strong>Spaces:</strong> 8</div>
+                <div class="cart-btn">
+                  <button>
+                    <i class="fa-solid fa-cart-plus"></i> Add to cart
+                  </button>
+                </div>
+              </div>
+
+              <div class="lesson-details">
+                <div class="image-content">
+                  <img src="images/english.jpg" alt="english" />
+                </div>
+                <div><strong>Subject:</strong> English</div>
+                <div><strong>Location:</strong> Berlin</div>
+                <div><strong>Price:</strong> Rs 2000</div>
+                <div><strong>Spaces:</strong> 10</div>
+                <div class="cart-btn">
+                  <button>
+                    <i class="fa-solid fa-cart-plus"></i> Add to cart
+                  </button>
+                </div>
+              </div>
+
+              <div class="lesson-details">
+                <div class="image-content">
+                  <img src="images/history.jpg" alt="history" />
+                </div>
+                <div><strong>Subject:</strong> History</div>
+                <div><strong>Location:</strong> Rome</div>
+                <div><strong>Price:</strong> Rs 3100</div>
+                <div><strong>Spaces:</strong> 7</div>
+                <div class="cart-btn">
+                  <button>
+                    <i class="fa-solid fa-cart-plus"></i> Add to cart
+                  </button>
+                </div>
+              </div>
+
+              <div class="lesson-details">
+                <div class="image-content">
+                  <img src="images/geography.jpg" alt="geography" />
+                </div>
+                <div><strong>Subject:</strong> Geography</div>
+                <div><strong>Location:</strong> New York</div>
+                <div><strong>Price:</strong> Rs 2900</div>
+                <div><strong>Spaces:</strong> 6</div>
+                <div class="cart-btn">
+                  <button>
+                    <i class="fa-solid fa-cart-plus"></i> Add to cart
+                  </button>
+                </div>
+              </div>
+
+              <div class="lesson-details">
+                <div class="image-content">
+                  <img src="images/programming.jpg" alt="programming" />
+                </div>
+                <div><strong>Subject:</strong> Programming</div>
+                <div><strong>Location:</strong> Tokyo</div>
+                <div><strong>Price:</strong> Rs 3500</div>
+                <div><strong>Spaces:</strong> 6</div>
+                <div class="cart-btn">
+                  <button>
+                    <i class="fa-solid fa-cart-plus"></i> Add to cart
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+      <!-- CheckOut Section -->
+      <div class="checkout-container" v-else>
+        <button class="back-button" @click="toggleCheckOutPage">
+          <i class="fa-solid fa-arrow-left"></i>
+          Continue Shopping
+        </button>
 
-        <div class="cart-button">
-          <button><i class="fa-solid fa-cart-shopping"></i></button>
-          <button class="visibility-mode" @click="toggleDarkMode">
-            <i class="fa-solid fa-moon"></i>
-          </button>
-        </div>
-      </nav>
+        <div class="checkout-section">
+          <div class="forms-section">
+            <!-- Personal Information Form -->
+            <div class="information-form">
+              <h3>Personal Information</h3>
+              <form id="personalForm">
+                <div class="form-group">
+                  <label for="fullName">Full Name</label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
 
-      <div class="main-content">
-        <!-- FILTER SECTION -->
-        <div class="filter">
-          <div class="filter-header">
-            <div class="filter-icon">
-              <i class="fa-solid fa-filter"></i>
+                <div class="form-group">
+                  <label for="email">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </div>
+              </form>
             </div>
-            <div class="filter-text"><span>Filter</span></div>
+
+            <!-- Delivery Information Form -->
+            <div class="information-form">
+              <h3>Delivery Information</h3>
+              <form id="deliveryForm">
+                <div class="form-group">
+                  <label for="address">Street Address</label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    placeholder="Enter your street address"
+                    required
+                  />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="city">City</label>
+                    <input
+                      type="text"
+                      id="city"
+                      name="city"
+                      placeholder="Enter city"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="postalCode">Postal Code</label>
+                    <input
+                      type="text"
+                      id="postalCode"
+                      name="postalCode"
+                      placeholder="Enter postal code"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="country">Country</label>
+                  <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    placeholder="Enter country"
+                    required
+                  />
+                </div>
+              </form>
+            </div>
           </div>
-
-          <div class="filter-categories">
-            <div><strong>Sort by:</strong></div>
-            <div class="sort-by-options">
-              <label><input type="checkbox" /> Subject</label>
-              <label><input type="checkbox" /> Location</label>
-              <label><input type="checkbox" /> Price</label>
-              <label><input type="checkbox" /> Availability</label>
-            </div>
-          </div>
-
-          <div class="sorting-order">
-            <div><strong>Order:</strong></div>
-            <div class="sort-by-options">
-              <label><input type="checkbox" /> Ascending</label>
-              <label><input type="checkbox" /> Descending</label>
-            </div>
-          </div>
-
-          <div class="filter-info">
-            <i class="fa-solid fa-circle-info"></i>
-            Select your preferences to filter the products. You can sort by
-            multiple criteria and choose the order of results.
-          </div>
-
-          <div class="pedagogy-quote">
-            <i class="fa-solid fa-quote-left quote-icon"></i>
-            <p class="quote-text">
-              "Education is the most powerful weapon which you can use to change
-              the world."
-            </p>
-            <p class="quote-author">— Nelson Mandela</p>
-          </div>
-
-          <div class="filter-actions">
-            <button class="apply-btn">Apply</button>
-            <button class="reset-btn">Reset</button>
-          </div>
-        </div>
-
-        <!-- PRODUCT SECTION -->
-        <div class="product">
-          <div class="product-header">
-            <h2>Product List <span class="sum-items">(6)</span></h2>
-            <div class="pagination">
-              <button disabled><i class="fa-solid fa-chevron-left"></i></button>
-              <button class="active">1</button>
-              <button>2</button>
-              <button>3</button>
-              <button><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
-          </div>
-
-          <div class="lesson-cards">
-            <div class="lesson-details">
-              <div class="image-content">
-                <img src="images\maths.jpg" alt="maths" />
-              </div>
-              <div><strong>Subject:</strong> Maths</div>
-              <div><strong>Location:</strong> London</div>
-              <div><strong>Price:</strong> Rs 2700</div>
-              <div><strong>Spaces:</strong> 5</div>
-              <div class="cart-btn">
-                <button>
-                  <i class="fa-solid fa-cart-plus"></i> Add to cart
-                </button>
-              </div>
+          <div class="shopping-cart">
+            <div class="shopping-cart-header">
+              <h2>Shopping Cart</h2>
+              <h2 class="item-count">4 Items</h2>
             </div>
 
-            <div class="lesson-details">
-              <div class="image-content">
-                <img src="images/science.jpeg" alt="science" />
-              </div>
-              <div><strong>Subject:</strong> Science</div>
-              <div><strong>Location:</strong> Paris</div>
-              <div><strong>Price:</strong> Rs 2500</div>
-              <div><strong>Spaces:</strong> 8</div>
-              <div class="cart-btn">
-                <button>
-                  <i class="fa-solid fa-cart-plus"></i> Add to cart
-                </button>
-              </div>
+            <div class="cart-table-header">
+              <div>Product Details</div>
+              <div>Subject</div>
+              <div>Location</div>
+              <div>Price</div>
+              <div></div>
             </div>
+            <div class="checkout-summary">
+              <div class="cart-items">
+                <div class="cart-item">
+                  <div class="item-product">
+                    <img
+                      src="images/english.jpg"
+                      alt="English"
+                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=Eng'"
+                    />
+                    <span>English</span>
+                  </div>
+                  <div class="item-subject">English</div>
+                  <div class="item-location">Berlin</div>
+                  <div class="item-price">Rs 2,000</div>
+                  <button class="remove-btn" onclick="removeItem(this)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
 
-            <div class="lesson-details">
-              <div class="image-content">
-                <img src="images/english.jpg" alt="english" />
-              </div>
-              <div><strong>Subject:</strong> English</div>
-              <div><strong>Location:</strong> Berlin</div>
-              <div><strong>Price:</strong> Rs 2000</div>
-              <div><strong>Spaces:</strong> 10</div>
-              <div class="cart-btn">
-                <button>
-                  <i class="fa-solid fa-cart-plus"></i> Add to cart
-                </button>
-              </div>
-            </div>
+                <div class="cart-item">
+                  <div class="item-product">
+                    <img
+                      src="images/history.jpg"
+                      alt="History"
+                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=His'"
+                    />
+                    <span>History</span>
+                  </div>
+                  <div class="item-subject">History</div>
+                  <div class="item-location">Rome</div>
+                  <div class="item-price">Rs 3,100</div>
+                  <button class="remove-btn" onclick="removeItem(this)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
 
-            <div class="lesson-details">
-              <div class="image-content">
-                <img src="images/history.jpg" alt="history" />
-              </div>
-              <div><strong>Subject:</strong> History</div>
-              <div><strong>Location:</strong> Rome</div>
-              <div><strong>Price:</strong> Rs 3100</div>
-              <div><strong>Spaces:</strong> 7</div>
-              <div class="cart-btn">
-                <button>
-                  <i class="fa-solid fa-cart-plus"></i> Add to cart
-                </button>
-              </div>
-            </div>
+                <div class="cart-item">
+                  <div class="item-product">
+                    <img
+                      src="images/geography.jpg"
+                      alt="Geography"
+                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=Geo'"
+                    />
+                    <span>Geography</span>
+                  </div>
+                  <div class="item-subject">Geography</div>
+                  <div class="item-location">New York</div>
+                  <div class="item-price">Rs 2,900</div>
+                  <button class="remove-btn" onclick="removeItem(this)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
 
-            <div class="lesson-details">
-              <div class="image-content">
-                <img src="images/geography.jpg" alt="geography" />
+                <div class="cart-item">
+                  <div class="item-product">
+                    <img
+                      src="images/programming.jpg"
+                      alt="Programming"
+                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=Prog'"
+                    />
+                    <span>Programming</span>
+                  </div>
+                  <div class="item-subject">Programming</div>
+                  <div class="item-location">Tokyo</div>
+                  <div class="item-price">Rs 3,500</div>
+                  <button class="remove-btn" onclick="removeItem(this)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
               </div>
-              <div><strong>Subject:</strong> Geography</div>
-              <div><strong>Location:</strong> New York</div>
-              <div><strong>Price:</strong> Rs 2900</div>
-              <div><strong>Spaces:</strong> 4</div>
-              <div class="cart-btn">
-                <button>
-                  <i class="fa-solid fa-cart-plus"></i> Add to cart
-                </button>
-              </div>
-            </div>
 
-            <div class="lesson-details">
-              <div class="image-content">
-                <img src="images/programming.jpg" alt="programming" />
-              </div>
-              <div><strong>Subject:</strong> Programming</div>
-              <div><strong>Location:</strong> Tokyo</div>
-              <div><strong>Price:</strong> Rs 3500</div>
-              <div><strong>Spaces:</strong> 4</div>
-              <div class="cart-btn">
-                <button>
-                  <i class="fa-solid fa-cart-plus"></i> Add to cart
+              <!-- Order Summary -->
+              <div class="order-summary">
+                <h3>Order Summary</h3>
+
+                <div class="summary-details">
+                  <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="total">Rs 12,650</span>
+                  </div>
+                </div>
+
+                <button class="checkout-btn" onclick="handleCheckout(event)">
+                  <i class="fa-solid fa-lock"></i> Checkout
                 </button>
               </div>
             </div>
@@ -190,11 +403,29 @@
     <script>
       var app = new Vue({
         el: "#app",
-        data: {},
+        data: {
+          isProductPage: true,
+          isDarkMode: false,
+        },
         methods: {
           toggleDarkMode: function () {
-            const body = document.querySelector("body");
-            body.classList.toggle("dark-mode");
+            this.isDarkMode = !this.isDarkMode;
+            console.log(this.isDarkMode);
+            document.body.classList.toggle("dark-mode");
+          },
+          toggleCheckOutPage: function () {
+            this.isProductPage = !this.isProductPage;
+            // history.pushState(
+            //   { productPage: this.isProductPage },
+            //   "",
+            //   "/checkout"
+            // );
+            // window.addEventListener("popstate", (event) => {
+            //   this.isProductPage = !this.isProductPage;
+            // });
+          },
+          toggleProductPage: function () {
+            this.isProductPage = !this.isProductPage;
           },
         },
       });
