@@ -323,7 +323,7 @@
                   <div class="item-subject">English</div>
                   <div class="item-location">Berlin</div>
                   <div class="item-price">Rs 2,000</div>
-                  <button class="remove-btn" onclick="removeItem(this)">
+                  <button class="remove-btn">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -340,7 +340,7 @@
                   <div class="item-subject">History</div>
                   <div class="item-location">Rome</div>
                   <div class="item-price">Rs 3,100</div>
-                  <button class="remove-btn" onclick="removeItem(this)">
+                  <button class="remove-btn">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -357,7 +357,7 @@
                   <div class="item-subject">Geography</div>
                   <div class="item-location">New York</div>
                   <div class="item-price">Rs 2,900</div>
-                  <button class="remove-btn" onclick="removeItem(this)">
+                  <button class="remove-btn">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -374,7 +374,7 @@
                   <div class="item-subject">Programming</div>
                   <div class="item-location">Tokyo</div>
                   <div class="item-price">Rs 3,500</div>
-                  <button class="remove-btn" onclick="removeItem(this)">
+                  <button class="remove-btn">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -391,7 +391,7 @@
                   </div>
                 </div>
 
-                <button class="checkout-btn" onclick="handleCheckout(event)">
+                <button class="checkout-btn">
                   <i class="fa-solid fa-lock"></i> Checkout
                 </button>
               </div>
@@ -414,17 +414,6 @@
             document.body.classList.toggle("dark-mode");
           },
           toggleCheckOutPage: function () {
-            this.isProductPage = !this.isProductPage;
-            // history.pushState(
-            //   { productPage: this.isProductPage },
-            //   "",
-            //   "/checkout"
-            // );
-            // window.addEventListener("popstate", (event) => {
-            //   this.isProductPage = !this.isProductPage;
-            // });
-          },
-          toggleProductPage: function () {
             this.isProductPage = !this.isProductPage;
           },
         },
