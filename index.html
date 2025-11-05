@@ -96,15 +96,22 @@
                 <button disabled>
                   <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
+                <button
+                  @click="currentPageNumber = page"
+                  :class="{active: currentPageNumber == page}"
+                  v-for="page in pages"
+                >
+                  {{ page }}
+                </button>
                 <button><i class="fa-solid fa-chevron-right"></i></button>
               </div>
             </div>
 
             <div class="lesson-cards">
-              <div class="lesson-details" v-for="product in products">
+              <div
+                class="lesson-details"
+                v-for="product in loadCurrentProducts"
+              >
                 <div class="image-content">
                   <img :src="product.src" :alt="product.subject" />
                 </div>
@@ -282,7 +289,11 @@
           isProductPage: true,
           isDarkMode: false,
           products: product,
-          orders: order
+          orders: order,
+          pageNumbers: 0,
+          pages: [],
+          currentPageNumber: 1,
+          currentProducts: [],
         },
         methods: {
           toggleDarkMode: function () {
@@ -290,10 +301,45 @@
             console.log(this.isDarkMode);
             document.body.classList.toggle("dark-mode");
           },
+
           toggleCheckOutPage: function () {
             this.isProductPage = !this.isProductPage;
           },
+
+          checkNumberOfProducts: function () {
+            const numOfProducts = this.products.length;
+            let numOfPages = Math.floor(numOfProducts / 6);
+            const remainder = numOfProducts % 6;
+            if (remainder != 0) {
+              numOfPages++;
+            }
+            this.pageNumbers = numOfPages;
+            this.populateNumOfPages(numOfPages);
+          },
+
+          populateNumOfPages(numOfPages) {
+            let i = 1;
+            while (numOfPages > 0 ) {
+              this.pages.push(i);
+              i++;
+              numOfPages--;
+            }
+          },
+
         },
+        computed: {
+          loadCurrentProducts() {
+            const start = (this.currentPageNumber - 1) * 6;
+            const end = this.currentPageNumber * 6;
+
+            return this.products.slice(start, end);
+
+          }
+        },
+
+        created() {
+          this.checkNumberOfProducts();
+        }
       });
     </script>
   </body>
