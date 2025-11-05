@@ -104,89 +104,14 @@
             </div>
 
             <div class="lesson-cards">
-              <div class="lesson-details">
+              <div class="lesson-details" v-for="product in products">
                 <div class="image-content">
-                  <img src="images\maths.jpg" alt="maths" />
+                  <img :src="product.src" :alt="product.subject" />
                 </div>
-                <div><strong>Subject:</strong> Maths</div>
-                <div><strong>Location:</strong> London</div>
-                <div><strong>Price:</strong> Rs 2700</div>
-                <div><strong>Spaces:</strong> 5</div>
-                <div class="cart-btn">
-                  <button>
-                    <i class="fa-solid fa-cart-plus"></i> Add to cart
-                  </button>
-                </div>
-              </div>
-
-              <div class="lesson-details">
-                <div class="image-content">
-                  <img src="images/science.jpeg" alt="science" />
-                </div>
-                <div><strong>Subject:</strong> Science</div>
-                <div><strong>Location:</strong> Paris</div>
-                <div><strong>Price:</strong> Rs 2500</div>
-                <div><strong>Spaces:</strong> 8</div>
-                <div class="cart-btn">
-                  <button>
-                    <i class="fa-solid fa-cart-plus"></i> Add to cart
-                  </button>
-                </div>
-              </div>
-
-              <div class="lesson-details">
-                <div class="image-content">
-                  <img src="images/english.jpg" alt="english" />
-                </div>
-                <div><strong>Subject:</strong> English</div>
-                <div><strong>Location:</strong> Berlin</div>
-                <div><strong>Price:</strong> Rs 2000</div>
-                <div><strong>Spaces:</strong> 10</div>
-                <div class="cart-btn">
-                  <button>
-                    <i class="fa-solid fa-cart-plus"></i> Add to cart
-                  </button>
-                </div>
-              </div>
-
-              <div class="lesson-details">
-                <div class="image-content">
-                  <img src="images/history.jpg" alt="history" />
-                </div>
-                <div><strong>Subject:</strong> History</div>
-                <div><strong>Location:</strong> Rome</div>
-                <div><strong>Price:</strong> Rs 3100</div>
-                <div><strong>Spaces:</strong> 7</div>
-                <div class="cart-btn">
-                  <button>
-                    <i class="fa-solid fa-cart-plus"></i> Add to cart
-                  </button>
-                </div>
-              </div>
-
-              <div class="lesson-details">
-                <div class="image-content">
-                  <img src="images/geography.jpg" alt="geography" />
-                </div>
-                <div><strong>Subject:</strong> Geography</div>
-                <div><strong>Location:</strong> New York</div>
-                <div><strong>Price:</strong> Rs 2900</div>
-                <div><strong>Spaces:</strong> 6</div>
-                <div class="cart-btn">
-                  <button>
-                    <i class="fa-solid fa-cart-plus"></i> Add to cart
-                  </button>
-                </div>
-              </div>
-
-              <div class="lesson-details">
-                <div class="image-content">
-                  <img src="images/programming.jpg" alt="programming" />
-                </div>
-                <div><strong>Subject:</strong> Programming</div>
-                <div><strong>Location:</strong> Tokyo</div>
-                <div><strong>Price:</strong> Rs 3500</div>
-                <div><strong>Spaces:</strong> 6</div>
+                <div><strong>Subject:</strong> {{product.subject}}</div>
+                <div><strong>Location:</strong> {{product.location}}</div>
+                <div><strong>Price:</strong> Rs {{product.price}}</div>
+                <div><strong>Spaces:</strong> {{product.spaces}}</div>
                 <div class="cart-btn">
                   <button>
                     <i class="fa-solid fa-cart-plus"></i> Add to cart
@@ -311,69 +236,17 @@
             </div>
             <div class="checkout-summary">
               <div class="cart-items">
-                <div class="cart-item">
+                <div class="cart-item" v-for="order in orders">
                   <div class="item-product">
                     <img
-                      src="images/english.jpg"
-                      alt="English"
+                      :src="order.src"
+                      :alt="order.subject"
                       onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=Eng'"
                     />
-                    <span>English</span>
                   </div>
-                  <div class="item-subject">English</div>
-                  <div class="item-location">Berlin</div>
-                  <div class="item-price">Rs 2,000</div>
-                  <button class="remove-btn">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-
-                <div class="cart-item">
-                  <div class="item-product">
-                    <img
-                      src="images/history.jpg"
-                      alt="History"
-                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=His'"
-                    />
-                    <span>History</span>
-                  </div>
-                  <div class="item-subject">History</div>
-                  <div class="item-location">Rome</div>
-                  <div class="item-price">Rs 3,100</div>
-                  <button class="remove-btn">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-
-                <div class="cart-item">
-                  <div class="item-product">
-                    <img
-                      src="images/geography.jpg"
-                      alt="Geography"
-                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=Geo'"
-                    />
-                    <span>Geography</span>
-                  </div>
-                  <div class="item-subject">Geography</div>
-                  <div class="item-location">New York</div>
-                  <div class="item-price">Rs 2,900</div>
-                  <button class="remove-btn">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-
-                <div class="cart-item">
-                  <div class="item-product">
-                    <img
-                      src="images/programming.jpg"
-                      alt="Programming"
-                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=Prog'"
-                    />
-                    <span>Programming</span>
-                  </div>
-                  <div class="item-subject">Programming</div>
-                  <div class="item-location">Tokyo</div>
-                  <div class="item-price">Rs 3,500</div>
+                  <div class="item-subject">{{order.subject}}</div>
+                  <div class="item-location">{{order.location}}</div>
+                  <div class="item-price">Rs {{order.price}}</div>
                   <button class="remove-btn">
                     <i class="fa-solid fa-trash"></i>
                   </button>
@@ -400,12 +273,16 @@
         </div>
       </div>
     </div>
-    <script>
+    <script type="module">
+      import product from "./product.json" with { type: "json" };
+      import order from "./order.json" with { type: "json" };
       var app = new Vue({
         el: "#app",
         data: {
           isProductPage: true,
           isDarkMode: false,
+          products: product,
+          orders: order
         },
         methods: {
           toggleDarkMode: function () {
