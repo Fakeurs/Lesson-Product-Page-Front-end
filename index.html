@@ -97,9 +97,9 @@
                   <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <button
+                  v-for="page in pages"
                   @click="currentPageNumber = page"
                   :class="{active: currentPageNumber == page}"
-                  v-for="page in pages"
                 >
                   {{ page }}
                 </button>
@@ -109,8 +109,8 @@
 
             <div class="lesson-cards">
               <div
-                class="lesson-details"
                 v-for="product in loadCurrentProducts"
+                class="lesson-details"
               >
                 <div class="image-content">
                   <img :src="product.src" :alt="product.subject" />
@@ -281,14 +281,14 @@
       </div>
     </div>
     <script type="module">
-      import product from "./product.json" with { type: "json" };
+
       import order from "./order.json" with { type: "json" };
       var app = new Vue({
         el: "#app",
         data: {
           isProductPage: true,
           isDarkMode: false,
-          products: product,
+          products: [],
           orders: order,
           pageNumbers: 0,
           pages: [],
@@ -308,6 +308,7 @@
 
           checkNumberOfProducts: function () {
             const numOfProducts = this.products.length;
+            console.log(`products array length when checking number of product is ${this.products.length}`);
             let numOfPages = Math.floor(numOfProducts / 6);
             const remainder = numOfProducts % 6;
             if (remainder != 0) {
@@ -326,6 +327,21 @@
             }
           },
 
+          async fetchProducts() {
+            const url = "/api/products";
+            try {
+              const response = await fetch(url);
+              if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+              }
+
+              this.products = await response.json();
+              console.log(`Products array length when fetched is: ${this.products.length}`);
+            } catch (error) {
+              console.error(error.message);
+            }
+          },
+
         },
         computed: {
           loadCurrentProducts() {
@@ -337,8 +353,10 @@
           }
         },
 
-        created() {
+        async created() {
+          await this.fetchProducts();
           this.checkNumberOfProducts();
+
         }
       });
     </script>
