@@ -110,6 +110,7 @@
             <div class="lesson-cards">
               <div
                 v-for="product in loadCurrentProducts"
+                :key="product._id"
                 class="lesson-details"
               >
                 <div class="image-content">
@@ -120,7 +121,7 @@
                 <div><strong>Price:</strong> Rs {{product.price}}</div>
                 <div><strong>Spaces:</strong> {{product.spaces}}</div>
                 <div class="cart-btn">
-                  <button>
+                  <button :data-id="product._id">
                     <i class="fa-solid fa-cart-plus"></i> Add to cart
                   </button>
                 </div>
