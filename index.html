@@ -28,9 +28,7 @@
             <button @click="toggleCheckOutPage">
               <i class="fa-solid fa-cart-shopping"></i>
             </button>
-            <button title="Toggle admin mode">
-              <i class="fa-solid fa-gear"></i>
-            </button>
+
             <button class="visibility-mode" @click="toggleDarkMode">
               <i v-if="isDarkMode" class="fa-regular fa-sun"></i>
 
@@ -258,7 +256,11 @@
                   <div class="item-subject">{{order.subject}}</div>
                   <div class="item-location">{{order.location}}</div>
                   <div class="item-price">Rs {{order.price}}</div>
-                  <button class="remove-btn">
+                  <button
+                    class="remove-btn"
+                    :data-id="order._id"
+                    @click="removeFromCart(order._id)"
+                  >
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -285,15 +287,13 @@
       </div>
     </div>
     <script type="module">
-
-      import order from "./order.json" with { type: "json" };
       var app = new Vue({
         el: "#app",
         data: {
           isProductPage: true,
           isDarkMode: false,
           products: [],
-          orders: order,
+          orders: [],
           pageNumbers: 0,
           pages: [],
           currentPageNumber: 1,
@@ -302,11 +302,17 @@
         methods: {
           toggleDarkMode: function () {
             this.isDarkMode = !this.isDarkMode;
-            console.log(this.isDarkMode);
+
             document.body.classList.toggle("dark-mode");
           },
 
-          toggleCheckOutPage: function () {
+          toggleCheckOutPage: async function () {
+            if (!this.isProductPage) {
+              await this.fetchProducts();
+            } else {
+              await this.fetchOrders();
+            }
+
             this.isProductPage = !this.isProductPage;
           },
 
@@ -324,7 +330,7 @@
 
           populateNumOfPages(numOfPages) {
             let i = 1;
-            while (numOfPages > 0 ) {
+            while (numOfPages > 0) {
               this.pages.push(i);
               i++;
               numOfPages--;
@@ -332,7 +338,6 @@
           },
 
           async fetchProducts() {
-
             const url = "/api/products";
             try {
               const response = await fetch(url);
@@ -341,57 +346,107 @@
               }
 
               this.products = await response.json();
-              console.log(`Products array length when fetched is: ${this.products.length}`);
+            } catch (error) {
+              console.error(error.message);
+            }
+          },
+
+          async removeFromCart(objectId) {
+            const url = "/api/orders";
+            const data = { id: objectId };
+
+            try {
+              // Delete order
+              const response = await fetch(url, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+              });
+              if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+              }
+
+              const result = await response.json();
+
+              // Update number of spaces (increment)
+              const updateURL = "/api/products/increment";
+              const productId = { productId: result.productId };
+
+              try {
+                const response = await fetch(updateURL, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(productId),
+                });
+                if (!response.ok) {
+                  throw new Error(`Response status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                await this.fetchOrders();
+              } catch (error) {
+                console.error(error.message);
+              }
             } catch (error) {
               console.error(error.message);
             }
           },
 
           async addToCart(objectId) {
-            console.log(objectId)
             const url = "/api/orders";
-            const data = {id : objectId};
+            const data = { id: objectId };
             try {
               // Create new order
-              const response = await fetch(url,{
-                  method: "POST",
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify(data)
-                });
+              const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+              });
               if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
               }
 
               const result = await response.json();
-              console.log(result);
 
               // Update number of spaces (decrement)
               const updateURL = "/api/products/decrement";
-            try {
-              // Update spaces
-              const response = await fetch(updateURL,{
+              try {
+                // Update spaces
+                const response = await fetch(updateURL, {
                   method: "PUT",
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify(data)
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(data),
                 });
+                if (!response.ok) {
+                  throw new Error(`Response status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log(result);
+
+                // GET latest products
+                await this.fetchProducts();
+              } catch (error) {
+                console.error(error.message);
+              }
+            } catch (error) {
+              console.error(error.message);
+            }
+          },
+          async fetchOrders() {
+            const url = "/api/orders";
+            try {
+              const response = await fetch(url);
               if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
               }
 
-              const result = await response.json();
-              console.log(result);
-
-              // GET latest products
-              await this.fetchProducts();
-
+              this.orders = await response.json();
             } catch (error) {
               console.error(error.message);
             }
-            } catch (error) {
-              console.error(error.message);
-            }
-          }
-
+          },
         },
         computed: {
           loadCurrentProducts() {
@@ -399,15 +454,13 @@
             const end = this.currentPageNumber * 6;
 
             return this.products.slice(start, end);
-
-          }
+          },
         },
 
         async created() {
           await this.fetchProducts();
           this.checkNumberOfProducts();
-
-        }
+        },
       });
     </script>
   </body>
