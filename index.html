@@ -121,7 +121,10 @@
                 <div><strong>Price:</strong> Rs {{product.price}}</div>
                 <div><strong>Spaces:</strong> {{product.spaces}}</div>
                 <div class="cart-btn">
-                  <button :data-id="product._id">
+                  <button
+                    :data-id="product._id"
+                    @click="addToCart(product._id)"
+                  >
                     <i class="fa-solid fa-cart-plus"></i> Add to cart
                   </button>
                 </div>
@@ -309,7 +312,7 @@
 
           checkNumberOfProducts: function () {
             const numOfProducts = this.products.length;
-            console.log(`products array length when checking number of product is ${this.products.length}`);
+
             let numOfPages = Math.floor(numOfProducts / 6);
             const remainder = numOfProducts % 6;
             if (remainder != 0) {
@@ -329,6 +332,7 @@
           },
 
           async fetchProducts() {
+
             const url = "/api/products";
             try {
               const response = await fetch(url);
@@ -342,6 +346,51 @@
               console.error(error.message);
             }
           },
+
+          async addToCart(objectId) {
+            console.log(objectId)
+            const url = "/api/orders";
+            const data = {id : objectId};
+            try {
+              // Create new order
+              const response = await fetch(url,{
+                  method: "POST",
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify(data)
+                });
+              if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+              }
+
+              const result = await response.json();
+              console.log(result);
+
+              // Update number of spaces (decrement)
+              const updateURL = "/api/products/decrement";
+            try {
+              // Update spaces
+              const response = await fetch(updateURL,{
+                  method: "PUT",
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify(data)
+                });
+              if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+              }
+
+              const result = await response.json();
+              console.log(result);
+
+              // GET latest products
+              await this.fetchProducts();
+
+            } catch (error) {
+              console.error(error.message);
+            }
+            } catch (error) {
+              console.error(error.message);
+            }
+          }
 
         },
         computed: {
