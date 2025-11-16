@@ -10,7 +10,31 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     />
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+
+    <!-- ADMIN MODE CSS -->
+    <style>
+      .admin-edit-icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 1.2rem;
+        color: orange;
+        cursor: pointer;
+        z-index: 10;
+      }
+
+      .lesson-details {
+        position: relative;
+      }
+
+      .admin-input {
+        width: 90%;
+        padding: 4px;
+        margin-top: 3px;
+      }
+    </style>
   </head>
+
   <body>
     <div id="app" class="body-wrapper">
       <div class="product-section" v-if="isProductPage">
@@ -25,13 +49,17 @@
           </div>
 
           <div class="cart-button">
-            <button @click="toggleCheckOutPage">
+            <button :disabled="checkOrders" @click="toggleCheckOutPage">
               <i class="fa-solid fa-cart-shopping"></i>
+            </button>
+
+            <!-- ADMIN MODE BUTTON -->
+            <button class="visibility-mode" @click="toggleAdminMode">
+              <i class="fa-solid fa-user-shield"></i>
             </button>
 
             <button class="visibility-mode" @click="toggleDarkMode">
               <i v-if="isDarkMode" class="fa-regular fa-sun"></i>
-
               <i v-else class="fa-solid fa-moon"></i>
             </button>
           </div>
@@ -91,9 +119,6 @@
             <div class="product-header">
               <h2>Product List <span class="sum-items">(6)</span></h2>
               <div class="pagination">
-                <button disabled>
-                  <i class="fa-solid fa-chevron-left"></i>
-                </button>
                 <button
                   v-for="page in pages"
                   @click="currentPageNumber = page"
@@ -101,7 +126,6 @@
                 >
                   {{ page }}
                 </button>
-                <button><i class="fa-solid fa-chevron-right"></i></button>
               </div>
             </div>
 
@@ -111,16 +135,81 @@
                 :key="product._id"
                 class="lesson-details"
               >
+                <!-- ADMIN MODE -->
+                <div
+                  v-if="isAdminMode"
+                  class="admin-edit-icon"
+                  @click="startEditing(product)"
+                >
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+
                 <div class="image-content">
                   <img :src="product.src" :alt="product.subject" />
                 </div>
-                <div><strong>Subject:</strong> {{product.subject}}</div>
-                <div><strong>Location:</strong> {{product.location}}</div>
-                <div><strong>Price:</strong> Rs {{product.price}}</div>
-                <div><strong>Spaces:</strong> {{product.spaces}}</div>
-                <div class="cart-btn">
+
+                <!-- SUBJECT -->
+                <div>
+                  <strong>Subject:</strong>
+                  <span v-if="editingProductId !== product._id">
+                    {{ product.subject }}
+                  </span>
+                  <input
+                    v-else
+                    class="admin-input"
+                    v-model="editableProduct.subject"
+                    @keyup.enter="saveEdit(product._id)"
+                  />
+                </div>
+
+                <!-- LOCATION -->
+                <div>
+                  <strong>Location:</strong>
+                  <span v-if="editingProductId !== product._id">
+                    {{ product.location }}
+                  </span>
+                  <input
+                    v-else
+                    class="admin-input"
+                    v-model="editableProduct.location"
+                    @keyup.enter="saveEdit(product._id)"
+                  />
+                </div>
+
+                <!-- PRICE -->
+                <div>
+                  <strong>Price:</strong> Rs
+                  <span v-if="editingProductId !== product._id">
+                    {{ product.price }}
+                  </span>
+                  <input
+                    v-else
+                    type="number"
+                    class="admin-input"
+                    v-model="editableProduct.price"
+                    @keyup.enter="saveEdit(product._id)"
+                  />
+                </div>
+
+                <!-- SPACES -->
+                <div>
+                  <strong>Spaces:</strong>
+                  <span v-if="editingProductId !== product._id">
+                    {{ product.spaces }}
+                  </span>
+                  <input
+                    v-else
+                    type="number"
+                    class="admin-input"
+                    v-model="editableProduct.spaces"
+                    @keyup.enter="saveEdit(product._id)"
+                  />
+                </div>
+
+                <!-- ADD TO CART BUTTON -->
+                <div class="cart-btn" v-if="!isAdminMode">
                   <button
-                    :data-id="product._id"
+                    :disabled="product.spaces > 0 ? null : true"
                     @click="addToCart(product._id)"
                   >
                     <i class="fa-solid fa-cart-plus"></i> Add to cart
@@ -131,7 +220,8 @@
           </div>
         </div>
       </div>
-      <!-- CheckOut Section -->
+
+      <!-- CHECKOUT SECTION -->
       <div class="checkout-container" v-else>
         <button class="back-button" @click="toggleCheckOutPage">
           <i class="fa-solid fa-arrow-left"></i>
@@ -230,6 +320,8 @@
               </form>
             </div>
           </div>
+
+          <!-- SHOPPING CART -->
           <div class="shopping-cart">
             <div class="shopping-cart-header">
               <h2>Shopping Cart</h2>
@@ -243,6 +335,7 @@
               <div>Price</div>
               <div></div>
             </div>
+
             <div class="checkout-summary">
               <div class="cart-items">
                 <div class="cart-item" v-for="order in orders">
@@ -256,20 +349,14 @@
                   <div class="item-subject">{{order.subject}}</div>
                   <div class="item-location">{{order.location}}</div>
                   <div class="item-price">Rs {{order.price}}</div>
-                  <button
-                    class="remove-btn"
-                    :data-id="order._id"
-                    @click="removeFromCart(order._id)"
-                  >
+                  <button class="remove-btn" @click="removeFromCart(order._id)">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
               </div>
 
-              <!-- Order Summary -->
               <div class="order-summary">
                 <h3>Order Summary</h3>
-
                 <div class="summary-details">
                   <div class="summary-row total">
                     <span>Total</span>
@@ -286,12 +373,18 @@
         </div>
       </div>
     </div>
+
+    <!-- VUE SCRIPT -->
     <script type="module">
       var app = new Vue({
         el: "#app",
         data: {
           isProductPage: true,
           isDarkMode: false,
+          isAdminMode: false,
+          editingProductId: null,
+          editableProduct: {},
+
           products: [],
           orders: [],
           pageNumbers: 0,
@@ -299,11 +392,16 @@
           currentPageNumber: 1,
           currentProducts: [],
         },
-        methods: {
-          toggleDarkMode: function () {
-            this.isDarkMode = !this.isDarkMode;
 
+        methods: {
+          toggleDarkMode() {
+            this.isDarkMode = !this.isDarkMode;
             document.body.classList.toggle("dark-mode");
+          },
+
+          toggleAdminMode() {
+            this.isAdminMode = !this.isAdminMode;
+            this.editingProductId = null;
           },
 
           toggleCheckOutPage: async function () {
@@ -312,8 +410,49 @@
             } else {
               await this.fetchOrders();
             }
-
             this.isProductPage = !this.isProductPage;
+          },
+
+          startEditing(product) {
+            if (this.editingProductId === product._id) {
+              this.editingProductId = null;
+              return;
+            }
+
+            this.editingProductId = product._id;
+
+            // Copy product data
+            this.editableProduct = {
+              subject: product.subject,
+              location: product.location,
+              price: product.price,
+              spaces: product.spaces,
+            };
+          },
+
+          async saveEdit(productId) {
+            const url = "/api/products/update";
+            const updateBody = {
+              id: productId,
+              ...this.editableProduct,
+            };
+
+            try {
+              const response = await fetch(url, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updateBody),
+              });
+
+              if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+              }
+
+              await this.fetchProducts();
+              this.editingProductId = null;
+            } catch (error) {
+              console.error(error.message);
+            }
           },
 
           checkNumberOfProducts: function () {
@@ -344,7 +483,6 @@
               if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
               }
-
               this.products = await response.json();
             } catch (error) {
               console.error(error.message);
@@ -356,19 +494,16 @@
             const data = { id: objectId };
 
             try {
-              // Delete order
               const response = await fetch(url, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
               });
-              if (!response.ok) {
+              if (!response.ok)
                 throw new Error(`Response status: ${response.status}`);
-              }
 
               const result = await response.json();
 
-              // Update number of spaces (increment)
               const updateURL = "/api/products/increment";
               const productId = { productId: result.productId };
 
@@ -378,11 +513,9 @@
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(productId),
                 });
-                if (!response.ok) {
-                  throw new Error(`Response status: ${response.status}`);
-                }
 
-                const result = await response.json();
+                if (!response.ok)
+                  throw new Error(`Response status: ${response.status}`);
 
                 await this.fetchOrders();
               } catch (error) {
@@ -396,37 +529,36 @@
           async addToCart(objectId) {
             const url = "/api/orders";
             const data = { id: objectId };
+
             try {
-              // Create new order
               const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
               });
-              if (!response.ok) {
+
+              if (!response.ok)
                 throw new Error(`Response status: ${response.status}`);
-              }
 
               const result = await response.json();
 
-              // Update number of spaces (decrement)
               const updateURL = "/api/products/decrement";
+
               try {
-                // Update spaces
                 const response = await fetch(updateURL, {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(data),
                 });
-                if (!response.ok) {
+
+                if (!response.ok)
                   throw new Error(`Response status: ${response.status}`);
-                }
 
-                const result = await response.json();
-                console.log(result);
-
-                // GET latest products
                 await this.fetchProducts();
+
+                if (this.orders.length == 0) {
+                  await this.fetchOrders();
+                }
               } catch (error) {
                 console.error(error.message);
               }
@@ -434,6 +566,7 @@
               console.error(error.message);
             }
           },
+
           async fetchOrders() {
             const url = "/api/orders";
             try {
@@ -441,25 +574,29 @@
               if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
               }
-
               this.orders = await response.json();
             } catch (error) {
               console.error(error.message);
             }
           },
         },
+
         computed: {
           loadCurrentProducts() {
             const start = (this.currentPageNumber - 1) * 6;
             const end = this.currentPageNumber * 6;
-
             return this.products.slice(start, end);
+          },
+
+          checkOrders() {
+            return this.orders.length > 0 ? null : "disabled";
           },
         },
 
         async created() {
           await this.fetchProducts();
           this.checkNumberOfProducts();
+          await this.fetchOrders();
         },
       });
     </script>

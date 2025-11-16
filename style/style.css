@@ -1371,3 +1371,61 @@ body.dark-mode .checkout-btn {
   gap: 1.5em;
   flex-direction: column;
 }
+
+/* ---------------------- DISABLED BUTTON STYLES ---------------------- */
+button:disabled,
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(40%);
+  pointer-events: none;
+}
+
+button:disabled:hover,
+button[disabled]:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Specific disabled styles for different button types */
+.cart-btn button:disabled {
+  background: hsl(220, 15%, 70%);
+  box-shadow: none;
+}
+
+body.dark-mode .cart-btn button:disabled {
+  background: hsl(220, 15%, 30%);
+}
+
+.checkout-btn:disabled {
+  background: hsl(220, 15%, 70%);
+  box-shadow: none;
+}
+
+body.dark-mode .checkout-btn:disabled {
+  background: hsl(220, 15%, 30%);
+}
+
+.pagination button:disabled {
+  background: hsl(220, 20%, 90%);
+  color: hsl(220, 15%, 60%);
+  border-color: hsl(220, 20%, 85%);
+}
+
+body.dark-mode .pagination button:disabled {
+  background: hsl(220, 15%, 20%);
+  color: hsl(220, 15%, 40%);
+  border-color: hsl(220, 15%, 25%);
+}
+
+.admin-edit-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #ff9800;
+}
+.lesson-details {
+  position: relative;
+}
