@@ -23,7 +23,12 @@
           <div class="searchbar-wrapper">
             <div class="searchbar">
               <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" placeholder="Search book..." />
+              <input
+                type="text"
+                placeholder="Search lesson..."
+                v-model="searchQuery"
+                @keyup.enter="searchLessons"
+              />
             </div>
           </div>
 
@@ -147,7 +152,7 @@
           <!-- PRODUCT SECTION -->
           <div class="product">
             <div class="product-header">
-              <h2>Product List <span class="sum-items">(6)</span></h2>
+              <h2>Product List</h2>
               <div class="pagination">
                 <button
                   v-for="page in pages"
@@ -266,35 +271,17 @@
               <form id="personalForm">
                 <div class="form-group">
                   <label for="fullName">Full Name</label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    placeholder="Enter your full name"
-                    required
-                  />
+                  <input id="fullName" v-model="personal.fullName" required />
                 </div>
 
                 <div class="form-group">
                   <label for="email">Email Address</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    required
-                  />
+                  <input id="email" v-model="personal.email" required />
                 </div>
 
                 <div class="form-group">
                   <label for="phone">Phone Number</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    placeholder="Enter your phone number"
-                    required
-                  />
+                  <input id="phone" v-model="personal.phone" required />
                 </div>
               </form>
             </div>
@@ -305,33 +292,19 @@
               <form id="deliveryForm">
                 <div class="form-group">
                   <label for="address">Street Address</label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    placeholder="Enter your street address"
-                    required
-                  />
+                  <input id="address" v-model="delivery.address" required />
                 </div>
 
                 <div class="form-row">
                   <div class="form-group">
                     <label for="city">City</label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      placeholder="Enter city"
-                      required
-                    />
+                    <input id="city" v-model="delivery.city" required />
                   </div>
                   <div class="form-group">
                     <label for="postalCode">Postal Code</label>
                     <input
-                      type="text"
                       id="postalCode"
-                      name="postalCode"
-                      placeholder="Enter postal code"
+                      v-model="delivery.postalCode"
                       required
                     />
                   </div>
@@ -339,13 +312,7 @@
 
                 <div class="form-group">
                   <label for="country">Country</label>
-                  <input
-                    type="text"
-                    id="country"
-                    name="country"
-                    placeholder="Enter country"
-                    required
-                  />
+                  <input id="country" v-model="delivery.country" required />
                 </div>
               </form>
             </div>
@@ -355,7 +322,6 @@
           <div class="shopping-cart">
             <div class="shopping-cart-header">
               <h2>Shopping Cart</h2>
-              <h2 class="item-count">4 Items</h2>
             </div>
 
             <div class="cart-table-header">
@@ -386,15 +352,10 @@
               </div>
 
               <div class="order-summary">
-                <h3>Order Summary</h3>
-                <div class="summary-details">
-                  <div class="summary-row total">
-                    <span>Total</span>
-                    <span id="total">Rs 12,650</span>
-                  </div>
-                </div>
+                <h3>Checkout</h3>
+                <div class="summary-details"></div>
 
-                <button class="checkout-btn">
+                <button class="checkout-btn" @click.prevent="checkout">
                   <i class="fa-solid fa-lock"></i> Checkout
                 </button>
               </div>
@@ -427,6 +388,21 @@
 
           activeSortIndex: null,
           activeOrder: null,
+
+          personal: {
+            fullName: "",
+            email: "",
+            phone: "",
+          },
+          delivery: {
+            address: "",
+            city: "",
+            postalCode: "",
+            country: "",
+          },
+
+          searchQuery: "",
+          searchResults: [],
         },
 
         methods: {
@@ -442,6 +418,46 @@
 
           toggleCheckOutPage: async function () {
             this.isProductPage = !this.isProductPage;
+          },
+
+          async searchLessons() {
+            const query = this.searchQuery.trim();
+
+            if (!query) {
+              try {
+                const allProducts = await this.fetchProducts();
+                this.products = allProducts;
+                this.showToast("Showing all lessons.");
+              } catch (error) {
+                console.error(error.message);
+                this.displayedProducts = [];
+                this.showToast("Failed to fetch lessons.");
+              }
+              return;
+            }
+
+            // Otherwise, search using the API
+            try {
+              const url =
+                "/api/products/search?" +
+                new URLSearchParams({ q: query }).toString();
+              const response = await fetch(url);
+              if (!response.ok)
+                throw new Error(`Search failed: ${response.status}`);
+
+              const results = await response.json();
+
+              if (results.length === 0) {
+                this.showToast("No matching lessons found.");
+              } else {
+                this.showToast(`${results.length} lessons found.`);
+              }
+
+              this.products = results;
+            } catch (error) {
+              console.error(error.message);
+              this.showToast("Error fetching search results.");
+            }
           },
 
           showToast(message) {
@@ -548,8 +564,6 @@
           },
 
           removeFromCart(objectId) {
-            // Remove from orders array, then increment spaces for particular product back
-
             let targetPosition = this.orders.findIndex(
               (order) => order._id === objectId
             );
@@ -576,43 +590,74 @@
             this.showToast("Product added to cart !");
           },
 
-          // async checkout(orders) {
-          //   const url = "/api/orders";
-          //   const data = { id: objectId };
+          async checkout() {
+            // Validate fields before sending reques
 
-          //   try {
-          //     const response = await fetch(url, {
-          //       method: "POST",
-          //       headers: { "Content-Type": "application/json" },
-          //       body: JSON.stringify(data),
-          //     });
+            const isEmpty = (obj) =>
+              Object.values(obj).some((value) => !value || value.trim() === "");
 
-          //     if (!response.ok)
-          //       throw new Error(`Response status: ${response.status}`);
+            if (isEmpty(this.personal) || isEmpty(this.delivery)) {
+              this.showToast("Please fill in all required fields.");
+              return;
+            }
 
-          //     const result = await response.json();
+            // Email regex validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.personal.email)) {
+              this.showToast("Please enter a valid email address.");
+              return;
+            }
 
-          //     const updateURL = "/api/products/decrement";
+            // Phone = digits only
+            const phoneRegex = /^[0-9]+$/;
+            if (!phoneRegex.test(this.personal.phone)) {
+              this.showToast("Phone number must contain only digits.");
+              return;
+            }
 
-          //     try {
-          //       const response = await fetch(updateURL, {
-          //         method: "PUT",
-          //         headers: { "Content-Type": "application/json" },
-          //         body: JSON.stringify(data),
-          //       });
+            // Postal code = digits only
+            const postalRegex = /^[0-9]+$/;
+            if (!postalRegex.test(this.delivery.postalCode)) {
+              this.showToast("Postal code must contain only digits.");
+              return;
+            }
 
-          //       if (!response.ok)
-          //         throw new Error(`Response status: ${response.status}`);
+            // data to be sent
+            const url = "/api/orders";
+            const data = {
+              personal: this.personal,
+              delivery: this.delivery,
+              orderIds: this.orders.map((o) => o._id),
+            };
 
-          //       await this.fetchProducts();
+            try {
+              const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+              });
 
-          //     } catch (error) {
-          //       console.error(error.message);
-          //     }
-          //   } catch (error) {
-          //     console.error(error.message);
-          //   }
-          // },
+              if (!response.ok)
+                throw new Error(`Order creation failed: ${response.status}`);
+
+              const result = await response.json();
+
+              this.showToast("Order successfully submitted!");
+
+              // Refresh products
+              await this.fetchProducts();
+              this.toggleCheckOutPage();
+
+              // Clear cart and form
+              this.orders = [];
+              this.personal = {};
+              this.delivery = {};
+            } catch (error) {
+              console.error(error.message);
+
+              this.showToast("Order failed. Please try again.");
+            }
+          },
         },
 
         computed: {

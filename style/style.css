@@ -599,15 +599,6 @@ body.dark-mode .product-header h2 {
   color: hsl(220, 20%, 90%);
 }
 
-.sum-items {
-  color: hsl(160, 60%, 45%);
-  font-size: 0.9em;
-}
-
-body.dark-mode .sum-items {
-  color: hsl(160, 60%, 55%);
-}
-
 .pagination {
   display: flex;
   align-items: center;
@@ -965,16 +956,6 @@ body.dark-mode .shopping-cart-header {
 
 body.dark-mode .shopping-cart-header h2 {
   color: hsl(220, 20%, 90%);
-}
-
-.shopping-cart-header .item-count {
-  color: hsl(160, 60%, 45%);
-  font-size: 1em;
-  font-weight: 500;
-}
-
-body.dark-mode .shopping-cart-header .item-count {
-  color: hsl(160, 60%, 55%);
 }
 
 /* ---------------------- CART TABLE ---------------------- */
@@ -1486,4 +1467,11 @@ body.dark-mode .pagination button:disabled {
     font-size: 13px;
     max-width: 90%;
   }
+}
+
+form .form-group label::after,
+form .form-row .form-group label::after {
+  content: " *";
+  color: red;
+  font-weight: bold;
 }
