@@ -62,18 +62,70 @@
             <div class="filter-categories">
               <div><strong>Sort by:</strong></div>
               <div class="sort-by-options">
-                <label><input type="checkbox" /> Subject</label>
-                <label><input type="checkbox" /> Location</label>
-                <label><input type="checkbox" /> Price</label>
-                <label><input type="checkbox" /> Availability</label>
+                <label>
+                  <input
+                    type="checkbox"
+                    :checked="activeSortIndex === 0"
+                    @change="setSort(0)"
+                    :disabled="activeSortIndex !== null && activeSortIndex !== 0"
+                  />
+                  Subject
+                </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    :checked="activeSortIndex === 1"
+                    @change="setSort(1)"
+                    :disabled="activeSortIndex !== null && activeSortIndex !== 1"
+                  />
+                  Location
+                </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    :checked="activeSortIndex === 2"
+                    @change="setSort(2)"
+                    :disabled="activeSortIndex !== null && activeSortIndex !== 2"
+                  />
+                  Price
+                </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    :checked="activeSortIndex === 3"
+                    @change="setSort(3)"
+                    :disabled="activeSortIndex !== null && activeSortIndex !== 3"
+                  />
+                  Availability
+                </label>
               </div>
             </div>
 
             <div class="sorting-order">
               <div><strong>Order:</strong></div>
               <div class="sort-by-options">
-                <label><input type="checkbox" /> Ascending</label>
-                <label><input type="checkbox" /> Descending</label>
+                <label>
+                  <input
+                    type="checkbox"
+                    :checked="activeOrder === 'Ascending'"
+                    :disabled="activeOrder === 'Descending'"
+                    @change="setOrder('Ascending')"
+                  />
+                  Ascending
+                </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    :checked="activeOrder === 'Descending'"
+                    :disabled="activeOrder === 'Ascending'"
+                    @change="setOrder('Descending')"
+                  />
+                  Descending
+                </label>
               </div>
             </div>
 
@@ -86,10 +138,10 @@
               <p class="quote-author">— Nelson Mandela</p>
             </div>
 
-            <div class="filter-actions">
+            <!-- <div class="filter-actions">
               <button class="apply-btn">Apply</button>
               <button class="reset-btn">Reset</button>
-            </div>
+            </div> -->
           </div>
 
           <!-- PRODUCT SECTION -->
@@ -372,6 +424,9 @@
 
           toastVisible: false,
           toastMessage: "",
+
+          activeSortIndex: null,
+          activeOrder: null,
         },
 
         methods: {
@@ -397,6 +452,23 @@
             setTimeout(() => {
               this.toastVisible = false;
             }, 3000);
+          },
+
+          setSort(index) {
+            // Toggle: uncheck if already active
+            if (this.activeSortIndex === index) {
+              this.activeSortIndex = null;
+            } else {
+              this.activeSortIndex = index;
+            }
+          },
+
+          setOrder(order) {
+            if (this.activeOrder === order) {
+              this.activeOrder = null; // toggle off
+            } else {
+              this.activeOrder = order;
+            }
           },
 
           startEditing(product) {
@@ -544,10 +616,39 @@
         },
 
         computed: {
+          sortedProducts() {
+            let sorted = [...this.products];
+
+            // Only sort if both a category and an order are selected
+            if (this.activeSortIndex !== null && this.activeOrder !== null) {
+              const keyMap = ["subject", "location", "price", "spaces"];
+              const key = keyMap[this.activeSortIndex];
+
+              sorted.sort((a, b) => {
+                let valA = a[key];
+                let valB = b[key];
+
+                // case-insensitive comparison
+                if (typeof valA === "string") {
+                  valA = valA.toLowerCase();
+                  valB = valB.toLowerCase();
+                }
+
+                if (valA < valB)
+                  return this.activeOrder === "Ascending" ? -1 : 1;
+                if (valA > valB)
+                  return this.activeOrder === "Ascending" ? 1 : -1;
+                return 0;
+              });
+            }
+
+            return sorted;
+          },
+
           loadCurrentProducts() {
             const start = (this.currentPageNumber - 1) * 6;
             const end = this.currentPageNumber * 6;
-            return this.products.slice(start, end);
+            return this.sortedProducts.slice(start, end);
           },
 
           checkOrders() {
