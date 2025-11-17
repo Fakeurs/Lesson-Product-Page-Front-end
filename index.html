@@ -75,6 +75,11 @@
               <div class="filter-text"><span>Filter</span></div>
             </div>
 
+            <div class="filter-info">
+              <i class="fa-solid fa-circle-info"></i>
+              Select your preferences to filter the products.
+            </div>
+
             <div class="filter-categories">
               <div><strong>Sort by:</strong></div>
               <div class="sort-by-options">
@@ -91,12 +96,6 @@
                 <label><input type="checkbox" /> Ascending</label>
                 <label><input type="checkbox" /> Descending</label>
               </div>
-            </div>
-
-            <div class="filter-info">
-              <i class="fa-solid fa-circle-info"></i>
-              Select your preferences to filter the products. You can sort by
-              multiple criteria and choose the order of results.
             </div>
 
             <div class="pedagogy-quote">
@@ -210,7 +209,7 @@
                 <div class="cart-btn" v-if="!isAdminMode">
                   <button
                     :disabled="product.spaces > 0 ? null : true"
-                    @click="addToCart(product._id)"
+                    @click="addToCart(product)"
                   >
                     <i class="fa-solid fa-cart-plus"></i> Add to cart
                   </button>
@@ -405,11 +404,6 @@
           },
 
           toggleCheckOutPage: async function () {
-            if (!this.isProductPage) {
-              await this.fetchProducts();
-            } else {
-              await this.fetchOrders();
-            }
             this.isProductPage = !this.isProductPage;
           },
 
@@ -489,96 +483,70 @@
             }
           },
 
-          async removeFromCart(objectId) {
-            const url = "/api/orders";
-            const data = { id: objectId };
+          removeFromCart(objectId) {
+            // Remove from orders array, then increment spaces for particular product back
 
-            try {
-              const response = await fetch(url, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-              });
-              if (!response.ok)
-                throw new Error(`Response status: ${response.status}`);
+            let targetPosition = this.orders.findIndex(
+              (order) => order._id === objectId
+            );
 
-              const result = await response.json();
+            if (targetPosition != -1) {
+              this.orders.splice(targetPosition, 1);
+            }
 
-              const updateURL = "/api/products/increment";
-              const productId = { productId: result.productId };
+            targetPosition = this.products.findIndex(
+              (product) => product._id === objectId
+            );
 
-              try {
-                const response = await fetch(updateURL, {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(productId),
-                });
-
-                if (!response.ok)
-                  throw new Error(`Response status: ${response.status}`);
-
-                await this.fetchOrders();
-              } catch (error) {
-                console.error(error.message);
-              }
-            } catch (error) {
-              console.error(error.message);
+            if (targetPosition != -1) {
+              this.products[targetPosition].spaces++;
             }
           },
 
-          async addToCart(objectId) {
-            const url = "/api/orders";
-            const data = { id: objectId };
+          async addToCart(product) {
+            // Populate orders array
 
-            try {
-              const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-              });
-
-              if (!response.ok)
-                throw new Error(`Response status: ${response.status}`);
-
-              const result = await response.json();
-
-              const updateURL = "/api/products/decrement";
-
-              try {
-                const response = await fetch(updateURL, {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(data),
-                });
-
-                if (!response.ok)
-                  throw new Error(`Response status: ${response.status}`);
-
-                await this.fetchProducts();
-
-                if (this.orders.length == 0) {
-                  await this.fetchOrders();
-                }
-              } catch (error) {
-                console.error(error.message);
-              }
-            } catch (error) {
-              console.error(error.message);
-            }
+            this.orders.push(product);
+            product.spaces--;
           },
 
-          async fetchOrders() {
-            const url = "/api/orders";
-            try {
-              const response = await fetch(url);
-              if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-              }
-              this.orders = await response.json();
-            } catch (error) {
-              console.error(error.message);
-            }
-          },
+          // async checkout(orders) {
+          //   const url = "/api/orders";
+          //   const data = { id: objectId };
+
+          //   try {
+          //     const response = await fetch(url, {
+          //       method: "POST",
+          //       headers: { "Content-Type": "application/json" },
+          //       body: JSON.stringify(data),
+          //     });
+
+          //     if (!response.ok)
+          //       throw new Error(`Response status: ${response.status}`);
+
+          //     const result = await response.json();
+
+          //     const updateURL = "/api/products/decrement";
+
+          //     try {
+          //       const response = await fetch(updateURL, {
+          //         method: "PUT",
+          //         headers: { "Content-Type": "application/json" },
+          //         body: JSON.stringify(data),
+          //       });
+
+          //       if (!response.ok)
+          //         throw new Error(`Response status: ${response.status}`);
+
+          //       await this.fetchProducts();
+
+          //     } catch (error) {
+          //       console.error(error.message);
+          //     }
+          //   } catch (error) {
+          //     console.error(error.message);
+          //   }
+          // },
         },
 
         computed: {
@@ -596,7 +564,6 @@
         async created() {
           await this.fetchProducts();
           this.checkNumberOfProducts();
-          await this.fetchOrders();
         },
       });
     </script>
