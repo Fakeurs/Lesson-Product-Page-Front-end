@@ -10,33 +10,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     />
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
-
-    <!-- ADMIN MODE CSS -->
-    <style>
-      .admin-edit-icon {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        font-size: 1.2rem;
-        color: orange;
-        cursor: pointer;
-        z-index: 10;
-      }
-
-      .lesson-details {
-        position: relative;
-      }
-
-      .admin-input {
-        width: 90%;
-        padding: 4px;
-        margin-top: 3px;
-      }
-    </style>
   </head>
 
   <body>
     <div id="app" class="body-wrapper">
+      <!-- Toast -->
+      <div v-if="toastVisible" class="toast">{{ toastMessage }}</div>
       <div class="product-section" v-if="isProductPage">
         <nav>
           <a href="#" class="navbar-brand">MdxAcademy</a>
@@ -390,6 +369,9 @@
           pages: [],
           currentPageNumber: 1,
           currentProducts: [],
+
+          toastVisible: false,
+          toastMessage: "",
         },
 
         methods: {
@@ -405,6 +387,16 @@
 
           toggleCheckOutPage: async function () {
             this.isProductPage = !this.isProductPage;
+          },
+
+          showToast(message) {
+            this.toastMessage = message;
+            this.toastVisible = true;
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+              this.toastVisible = false;
+            }, 3000);
           },
 
           startEditing(product) {
@@ -501,6 +493,7 @@
             if (targetPosition != -1) {
               this.products[targetPosition].spaces++;
             }
+            this.showToast("Product removed from cart !");
           },
 
           async addToCart(product) {
@@ -508,6 +501,7 @@
 
             this.orders.push(product);
             product.spaces--;
+            this.showToast("Product added to cart !");
           },
 
           // async checkout(orders) {
