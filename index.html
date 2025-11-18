@@ -216,7 +216,7 @@
                     v-else
                     type="number"
                     class="admin-input"
-                    v-model="editableProduct.price"
+                    v-model.number="editableProduct.price"
                     @keyup.enter="saveEdit(product._id)"
                   />
                 </div>
@@ -231,7 +231,7 @@
                     v-else
                     type="number"
                     class="admin-input"
-                    v-model="editableProduct.spaces"
+                    v-model.number="editableProduct.spaces"
                     @keyup.enter="saveEdit(product._id)"
                   />
                 </div>
