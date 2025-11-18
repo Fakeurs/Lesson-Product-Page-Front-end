@@ -447,7 +447,7 @@
               // Otherwise → search API
               try {
                 const url =
-                  "/api/products/search?" +
+                  "https://node-server-for-lesson-product-page.onrender.com/api/products/search?" +
                   new URLSearchParams({ q: query }).toString();
 
                 const response = await fetch(url);
@@ -517,7 +517,8 @@
           },
 
           async saveEdit(productId) {
-            const url = "/api/products/update";
+            const url =
+              "https://node-server-for-lesson-product-page.onrender.com/api/products/update";
             const updateBody = {
               id: productId,
               ...this.editableProduct,
@@ -563,7 +564,8 @@
           },
 
           async fetchProducts() {
-            const url = "/api/products";
+            const url =
+              "https://node-server-for-lesson-product-page.onrender.com/api/products";
             try {
               const response = await fetch(url);
               if (!response.ok)
@@ -637,7 +639,8 @@
             }
 
             // data to be sent
-            const url = "/api/orders";
+            const url =
+              "https://node-server-for-lesson-product-page.onrender.com/api/orders";
             const data = {
               personal: this.personal,
               delivery: this.delivery,
