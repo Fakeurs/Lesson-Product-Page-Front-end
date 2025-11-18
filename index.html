@@ -27,7 +27,7 @@
                 type="text"
                 placeholder="Search lesson..."
                 v-model="searchQuery"
-                @keyup.enter="searchLessons"
+                @input="searchLessons"
               />
             </div>
           </div>
@@ -142,11 +142,6 @@
               </p>
               <p class="quote-author">— Nelson Mandela</p>
             </div>
-
-            <!-- <div class="filter-actions">
-              <button class="apply-btn">Apply</button>
-              <button class="reset-btn">Reset</button>
-            </div> -->
           </div>
 
           <!-- PRODUCT SECTION -->
@@ -403,6 +398,7 @@
 
           searchQuery: "",
           searchResults: [],
+          debounceTimer: null,
         },
 
         methods: {
@@ -421,43 +417,49 @@
           },
 
           async searchLessons() {
-            const query = this.searchQuery.trim();
+            clearTimeout(this.debounceTimer);
 
-            if (!query) {
+            this.debounceTimer = setTimeout(async () => {
+              const query = this.searchQuery.trim();
+
+              // If empty → fetch all products
+              if (!query) {
+                try {
+                  const allProducts = await this.fetchProducts();
+                  this.products = allProducts;
+                  this.showToast("Showing all lessons.");
+                } catch (error) {
+                  console.error(error.message);
+                  this.products = [];
+                  this.showToast("Failed to fetch lessons.");
+                }
+                return;
+              }
+
+              // Otherwise → search API
               try {
-                const allProducts = await this.fetchProducts();
-                this.products = allProducts;
-                this.showToast("Showing all lessons.");
+                const url =
+                  "/api/products/search?" +
+                  new URLSearchParams({ q: query }).toString();
+
+                const response = await fetch(url);
+                if (!response.ok)
+                  throw new Error(`Search failed: ${response.status}`);
+
+                const results = await response.json();
+
+                if (results.length === 0) {
+                  this.showToast("No matching lessons found.");
+                } else {
+                  this.showToast(`${results.length} lessons found.`);
+                }
+
+                this.products = results;
               } catch (error) {
                 console.error(error.message);
-                this.displayedProducts = [];
-                this.showToast("Failed to fetch lessons.");
+                this.showToast("Error fetching search results.");
               }
-              return;
-            }
-
-            // Otherwise, search using the API
-            try {
-              const url =
-                "/api/products/search?" +
-                new URLSearchParams({ q: query }).toString();
-              const response = await fetch(url);
-              if (!response.ok)
-                throw new Error(`Search failed: ${response.status}`);
-
-              const results = await response.json();
-
-              if (results.length === 0) {
-                this.showToast("No matching lessons found.");
-              } else {
-                this.showToast(`${results.length} lessons found.`);
-              }
-
-              this.products = results;
-            } catch (error) {
-              console.error(error.message);
-              this.showToast("Error fetching search results.");
-            }
+            }, 300); // ← debounce delay
           },
 
           showToast(message) {
