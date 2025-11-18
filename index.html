@@ -150,9 +150,9 @@
               <h2>Product List</h2>
               <div class="pagination">
                 <button
-                  v-for="page in pages"
+                  v-for="page in pageList"
                   @click="currentPageNumber = page"
-                  :class="{active: currentPageNumber == page}"
+                  :class="{ active: currentPageNumber == page }"
                 >
                   {{ page }}
                 </button>
@@ -360,7 +360,6 @@
       </div>
     </div>
 
-    <!-- VUE SCRIPT -->
     <script type="module">
       var app = new Vue({
         el: "#app",
@@ -412,8 +411,18 @@
             this.editingProductId = null;
           },
 
-          toggleCheckOutPage: async function () {
-            this.isProductPage = !this.isProductPage;
+          async toggleCheckOutPage() {
+            if (this.isProductPage) {
+              // Leaving product page
+              this.isProductPage = false;
+              this.activeOrder = null;
+              this.activeSortIndex = null;
+              this.searchQuery = "";
+            } else {
+              // Coming back to product page
+              this.isProductPage = true;
+              this.currentPageNumber = 1;
+            }
           },
 
           async searchLessons() {
@@ -425,13 +434,12 @@
               // If empty → fetch all products
               if (!query) {
                 try {
-                  const allProducts = await this.fetchProducts();
-                  this.products = allProducts;
+                  await this.fetchProducts();
+                  this.currentPageNumber = 1;
                   this.showToast("Showing all lessons.");
                 } catch (error) {
-                  console.error(error.message);
+                  console.error(error);
                   this.products = [];
-                  this.showToast("Failed to fetch lessons.");
                 }
                 return;
               }
@@ -455,11 +463,12 @@
                 }
 
                 this.products = results;
+                this.currentPageNumber = 1;
               } catch (error) {
                 console.error(error.message);
                 this.showToast("Error fetching search results.");
               }
-            }, 300); // ← debounce delay
+            }, 300); // debounce delay
           },
 
           showToast(message) {
@@ -483,10 +492,11 @@
 
           setOrder(order) {
             if (this.activeOrder === order) {
-              this.activeOrder = null; // toggle off
+              this.activeOrder = null;
             } else {
               this.activeOrder = order;
             }
+            this.currentPageNumber = 1;
           },
 
           startEditing(product) {
@@ -556,12 +566,14 @@
             const url = "/api/products";
             try {
               const response = await fetch(url);
-              if (!response.ok) {
+              if (!response.ok)
                 throw new Error(`Response status: ${response.status}`);
-              }
               this.products = await response.json();
+
+              if (!Array.isArray(this.products)) this.products = [];
             } catch (error) {
               console.error(error.message);
+              this.products = [];
             }
           },
 
@@ -593,7 +605,7 @@
           },
 
           async checkout() {
-            // Validate fields before sending reques
+            // Validate fields before sending request
 
             const isEmpty = (obj) =>
               Object.values(obj).some((value) => !value || value.trim() === "");
@@ -663,10 +675,23 @@
         },
 
         computed: {
-          sortedProducts() {
-            let sorted = [...this.products];
+          totalPages() {
+            // always ensure products is an array
+            const p = Array.isArray(this.products) ? this.products : [];
+            return Math.ceil(p.length / 6) || 1;
+          },
 
-            // Only sort if both a category and an order are selected
+          pageList() {
+            const total = this.totalPages || 1;
+            return Array.from({ length: total }, (_, i) => i + 1);
+          },
+
+          sortedProducts() {
+            // Ensure products is always an array
+            const list = Array.isArray(this.products) ? this.products : [];
+
+            let sorted = [...list];
+
             if (this.activeSortIndex !== null && this.activeOrder !== null) {
               const keyMap = ["subject", "location", "price", "spaces"];
               const key = keyMap[this.activeSortIndex];
@@ -675,7 +700,6 @@
                 let valA = a[key];
                 let valB = b[key];
 
-                // case-insensitive comparison
                 if (typeof valA === "string") {
                   valA = valA.toLowerCase();
                   valB = valB.toLowerCase();
@@ -693,9 +717,12 @@
           },
 
           loadCurrentProducts() {
+            const list = Array.isArray(this.sortedProducts)
+              ? this.sortedProducts
+              : [];
             const start = (this.currentPageNumber - 1) * 6;
             const end = this.currentPageNumber * 6;
-            return this.sortedProducts.slice(start, end);
+            return list.slice(start, end);
           },
 
           checkOrders() {
