@@ -354,7 +354,11 @@
                 <h3>Checkout</h3>
                 <div class="summary-details"></div>
 
-                <button class="checkout-btn" @click.prevent="checkout">
+                <button
+                  class="checkout-btn"
+                  :disabled="!isFormValid"
+                  @click.prevent="checkout"
+                >
                   <i class="fa-solid fa-lock"></i> Checkout
                 </button>
               </div>
@@ -736,6 +740,27 @@
 
           checkOrders() {
             return this.orders.length > 0 ? null : "disabled";
+          },
+          isFormValid() {
+            // Check if any personal or delivery field is empty
+            const isEmpty = (obj) =>
+              Object.values(obj).some((value) => !value || value.trim() === "");
+
+            if (isEmpty(this.personal) || isEmpty(this.delivery)) return false;
+
+            // Email regex validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.personal.email)) return false;
+
+            // Phone = digits only
+            const phoneRegex = /^[0-9]+$/;
+            if (!phoneRegex.test(this.personal.phone)) return false;
+
+            // Postal code = digits only
+            const postalRegex = /^[0-9]+$/;
+            if (!postalRegex.test(this.delivery.postalCode)) return false;
+
+            return true; // All fields valid
           },
         },
 
