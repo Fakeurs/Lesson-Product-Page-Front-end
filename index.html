@@ -14,7 +14,7 @@
 
   <body>
     <div id="app" class="body-wrapper">
-      <!-- Toast -->
+      <!-- Toast Message -->
       <div v-if="toastVisible" class="toast">{{ toastMessage }}</div>
       <div class="product-section" v-if="isProductPage">
         <nav>
@@ -334,7 +334,7 @@
                     <img
                       :src="order.src"
                       :alt="order.subject"
-                      onerror="this.src='https://via.placeholder.com/70/2d9da8/ffffff?text=Eng'"
+                      onerror="this.src='https://media.istockphoto.com/id/1142986365/vector/error-with-glitch-effect-on-screen-error-404-page-not-found-flat-design-modern-vector.jpg?s=612x612&w=0&k=20&c=E0Y1GZsaRrEk-a2eW49WKCjRFd9SS1MitZ6Vly1HAs8='"
                     />
                   </div>
                   <div class="item-subject">{{order.subject}}</div>
@@ -584,10 +584,12 @@
               (order) => order._id === objectId
             );
 
+            // Remove from cart
             if (targetPosition != -1) {
               this.orders.splice(targetPosition, 1);
             }
 
+            // Add back to lesson count
             targetPosition = this.products.findIndex(
               (product) => product._id === objectId
             );
