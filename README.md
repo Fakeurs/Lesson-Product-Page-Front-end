@@ -1,7 +1,7 @@
 # MdxAcademy - Product Page
----
 
 MdxAcademy is a product page whereby users can enrolled into particular lessons.
+
 ---
 
 #### Features
