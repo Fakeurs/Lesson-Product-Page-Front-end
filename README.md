@@ -27,7 +27,6 @@ MdxAcademy is a product page whereby users can enrolled into particular lessons.
 ---
 
 ## Getting started
----
 
 ### Cloning the repo
 
